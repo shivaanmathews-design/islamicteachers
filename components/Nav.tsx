@@ -56,22 +56,10 @@ export default function Nav() {
             src="/logo.png"
             alt="IslamicTeachers.co.za"
             style={{ height: 44, width: 'auto', objectFit: 'contain' }}
-            onError={(e) => {
-              // Fallback to text logo if image not found
-              const el = e.currentTarget
-              el.style.display = 'none'
-              const next = el.nextElementSibling as HTMLElement | null
-              if (next) next.style.display = 'flex'
-            }}
           />
-          <div style={{ display:'none', alignItems:'center', gap:8 }}>
-            <div style={{ background: '#fff', borderRadius: 6, padding: '4px 10px' }}>
-              <span style={{ color: '#0F6E56', fontWeight: 700, fontSize: 14, letterSpacing: 1 }}>IT</span>
-            </div>
-            <span style={{ color: '#fff', fontWeight: 700, fontSize: 15, letterSpacing: 0.5 }}>
-              IslamicTeachers<span style={{ color: '#5DCAA5' }}>.co.za</span>
-            </span>
-          </div>
+          <span style={{ color: '#fff', fontWeight: 700, fontSize: 15, letterSpacing: 0.5 }}>
+            IslamicTeachers<span style={{ color: '#5DCAA5' }}>.co.za</span>
+          </span>
         </Link>
 
         {/* Desktop links */}
