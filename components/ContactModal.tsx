@@ -46,13 +46,28 @@ export default function ContactModal({ teacher }: { teacher: Teacher }) {
                 <div style={{ fontSize:48, marginBottom:16 }}>✅</div>
                 <h3 style={{ color:'#0F6E56', marginBottom:8 }}>Enquiry sent!</h3>
                 <p style={{ color:'#555', marginBottom:16 }}>
-                  {teacher.full_name} will be in touch soon.
+                  {teacher.full_name} will be in touch soon. You can also reach them directly:
                 </p>
-                <div style={{ background:'#E1F5EE', borderRadius:8, padding:16, marginBottom:16 }}>
-                  <p style={{ margin:'0 0 6px', fontSize:14, fontWeight:600, color:'#0F6E56' }}>Contact details:</p>
-                  <p style={{ margin:'0 0 4px', fontSize:14 }}>📧 {teacher.email}</p>
-                  <p style={{ margin:0, fontSize:14 }}>💬 {teacher.whatsapp}</p>
+                <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:20 }}>
+                  {teacher.whatsapp && (
+                    <a
+                      href={`https://wa.me/${teacher.whatsapp.replace(/\D/g,'').replace(/^0/,'27')}`}
+                      target="_blank" rel="noopener noreferrer"
+                      onClick={() => fetch('/api/teachers/track-whatsapp', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ teacher_id: teacher.id }) })}
+                      style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:10, background:'#25D366', color:'#fff', borderRadius:8, padding:'12px 20px', textDecoration:'none', fontWeight:600, fontSize:15 }}>
+                      💬 Message on WhatsApp
+                    </a>
+                  )}
+                  {teacher.email && (
+                    <a href={`mailto:${teacher.email}`}
+                      style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:10, background:'#E1F5EE', color:'#0F6E56', borderRadius:8, padding:'12px 20px', textDecoration:'none', fontWeight:600, fontSize:15, border:'1px solid #5DCAA5' }}>
+                      📧 Send Email
+                    </a>
+                  )}
                 </div>
+                <p style={{ fontSize:12, color:'#aaa', margin:'0 0 16px' }}>
+                  🔒 Contact details are only shared after you submit an enquiry.
+                </p>
                 <button onClick={() => setOpen(false)} className="btn-teal">Done</button>
               </div>
             ) : (

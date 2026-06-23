@@ -23,25 +23,54 @@ export default async function HomePage() {
   return (
     <>
       {/* HERO */}
-      <section className="section-mint" style={{ padding:'80px 0' }}>
-        <div className="container" style={{ textAlign:'center' }}>
-          <h1 style={{ fontSize:'clamp(28px,5vw,48px)',fontWeight:700,color:'#0F6E56',margin:'0 0 16px',lineHeight:1.2 }}>
+      <section style={{
+        position: 'relative',
+        minHeight: 520,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        backgroundImage: 'url(/hero-bg.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center 30%',
+        backgroundRepeat: 'no-repeat',
+      }}>
+        {/* Dark overlay */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to bottom, rgba(8,40,28,0.72) 0%, rgba(8,40,28,0.65) 60%, rgba(8,40,28,0.80) 100%)',
+        }} />
+
+        {/* Content */}
+        <div className="container" style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '80px 20px' }}>
+
+          {/* Logo */}
+          <div style={{ marginBottom: 28 }}>
+            <img
+              src="/logo.png"
+              alt="IslamicTeachers.co.za"
+              style={{ height: 140, width: 'auto', objectFit: 'contain', borderRadius: 16, background: '#fff', padding: 12, boxShadow: '0 4px 24px rgba(0,0,0,0.25)' }}
+            />
+          </div>
+
+          <h1 style={{ fontSize: 'clamp(24px,4.5vw,44px)', fontWeight: 700, color: '#fff', margin: '0 0 16px', lineHeight: 1.25, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
             Find a Trusted Islamic Teacher Near You
           </h1>
-          <p style={{ fontSize:'clamp(15px,2vw,20px)',color:'#2C2C2A',margin:'0 auto 40px',maxWidth:580,opacity:.85 }}>
+          <p style={{ fontSize: 'clamp(14px,2vw,18px)', color: '#E1F5EE', margin: '0 auto 40px', maxWidth: 560, lineHeight: 1.7, opacity: 0.95 }}>
             Search hundreds of verified Islamic teachers and institutions across South Africa. Free for students and parents.
           </p>
 
           {/* Search bar */}
           <form action="/find-a-teacher" method="GET"
-            style={{ display:'flex',flexWrap:'wrap',gap:12,justifyContent:'center',maxWidth:680,margin:'0 auto' }}>
-            <select name="subject" className="form-input" style={{ flex:'1 1 200px',maxWidth:260 }}>
+            style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', maxWidth: 680, margin: '0 auto' }}>
+            <select name="subject" className="form-input" style={{ flex: '1 1 200px', maxWidth: 260, background: 'rgba(255,255,255,0.96)' }}>
               <option value="">All Subjects</option>
-              {SUBJECTS.filter(s=>s.value!=='other').map(s=>(
+              {SUBJECTS.filter(s => s.value !== 'other').map(s => (
                 <option key={s.value} value={s.value}>{s.label}</option>
               ))}
             </select>
-            <input name="city" className="form-input" placeholder="City or Province" style={{ flex:'1 1 200px',maxWidth:260 }} />
+            <input name="city" className="form-input" placeholder="City or Province"
+              style={{ flex: '1 1 200px', maxWidth: 260, background: 'rgba(255,255,255,0.96)' }} />
             <button type="submit" className="btn-gold">🔍 Search</button>
           </form>
         </div>

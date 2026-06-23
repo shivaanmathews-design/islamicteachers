@@ -49,42 +49,38 @@ export default function Nav() {
 
   return (
     <nav className="sticky top-0 z-50 shadow-md" style={{ background: '#0F6E56' }}>
-      <div className="container flex items-center justify-between" style={{ padding: '0 20px', height: 64 }}>
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 no-underline">
-          <img
-            src="/logo.png"
-            alt="IslamicTeachers.co.za"
-            style={{ height: 44, width: 'auto', objectFit: 'contain' }}
-          />
-          <span style={{ color: '#fff', fontWeight: 700, fontSize: 15, letterSpacing: 0.5 }}>
-            IslamicTeachers<span style={{ color: '#5DCAA5' }}>.co.za</span>
-          </span>
-        </Link>
+      <div className="container" style={{ padding: '0 20px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
 
-        {/* Desktop links */}
+        {/* Desktop links — centred */}
         <div className="hidden md:flex items-center gap-6">
           {links.map(l => (
             <Link key={l.href} href={l.href}
               style={{ color: pathname === l.href ? '#E1F5EE' : '#ffffff', fontSize: 14, fontWeight: 500, textDecoration: 'none', opacity: pathname === l.href ? 1 : 0.85 }}
             >{l.label}</Link>
           ))}
+        </div>
+
+        {/* Login/Dashboard — right side */}
+        <div className="hidden md:flex items-center gap-3" style={{ position: 'absolute', right: 20 }}>
           {user ? (
-            <div className="flex items-center gap-3">
-              <Link href={dashLink} className="btn-gold" style={{ padding: '8px 18px', fontSize: 13 }}>Dashboard</Link>
+            <>
+              <Link href={dashLink} className="btn-gold" style={{ padding: '7px 16px', fontSize: 13 }}>Dashboard</Link>
               <button onClick={() => supabase.auth.signOut()}
-                style={{ color: '#E1F5EE', background: 'transparent', border: '1px solid #5DCAA5', borderRadius: 6, padding: '7px 14px', fontSize: 13, cursor: 'pointer' }}>
+                style={{ color: '#E1F5EE', background: 'transparent', border: '1px solid #5DCAA5', borderRadius: 6, padding: '6px 12px', fontSize: 13, cursor: 'pointer' }}>
                 Sign out
               </button>
-            </div>
+            </>
           ) : (
-            <Link href="/login" className="btn-gold" style={{ padding: '8px 18px', fontSize: 13 }}>Login</Link>
+            <Link href="/login" className="btn-gold" style={{ padding: '7px 16px', fontSize: 13 }}>Login</Link>
           )}
         </div>
 
-        {/* Mobile hamburger */}
+        {/* Mobile: logo left + hamburger right */}
+        <Link href="/" className="md:hidden no-underline" style={{ position: 'absolute', left: 20 }}>
+          <img src="/logo.png" alt="IslamicTeachers.co.za" style={{ height: 40, width: 'auto', objectFit: 'contain', borderRadius: 8, background: '#fff', padding: 4 }} />
+        </Link>
         <button className="md:hidden" onClick={() => setOpen(!open)}
-          style={{ color: '#fff', background: 'none', border: 'none', cursor: 'pointer', fontSize: 24 }}>
+          style={{ color: '#fff', background: 'none', border: 'none', cursor: 'pointer', fontSize: 24, position: 'absolute', right: 20 }}>
           {open ? '✕' : '☰'}
         </button>
       </div>
