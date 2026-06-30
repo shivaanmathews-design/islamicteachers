@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { SUBJECTS, PROVINCES } from '@/lib/types'
+import { phoneError, normalizeEmail, digitsOnly } from '@/lib/validation'
 
 export default function RegisterInstitutionPage() {
   const router = useRouter()
@@ -18,7 +19,10 @@ export default function RegisterInstitutionPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
-  function set(k: string, v: any) { setForm(f=>({...f,[k]:v})) }
+  function set(k: string, v: any) {
+    if (typeof v === 'string' && (k === 'phone' || k === 'whatsapp')) v = digitsOnly(v).slice(0, 10)
+    setForm(f=>({...f,[k]:v}))
+  }
   function toggleSubject(val: string) {
     setForm(f=>({ ...f, subjects_offered: f.subjects_offered.includes(val)
       ? f.subjects_offered.filter(x=>x!==val) : [...f.subjects_offered, val] }))
@@ -29,18 +33,20 @@ export default function RegisterInstitutionPage() {
     if (!form.privacy_consent) { setError('You must read and accept the Privacy Policy.'); return }
     if (!form.terms_consent) { setError('You must read and accept the Terms & Conditions.'); return }
     if (!form.child_safety_consent) { setError('You must read and accept the Child Safety Policy.'); return }
+    const phoneErr = phoneError(form.phone, 'Phone number'); if (phoneErr) { setError(phoneErr); return }
+    const waErr = phoneError(form.whatsapp, 'WhatsApp number', false); if (waErr) { setError(waErr); return }
     if (form.password !== form.confirm_password) { setError('Passwords do not match.'); return }
     if (form.password.length < 8) { setError('Password must be at least 8 characters.'); return }
     setLoading(true); setError('')
     try {
       const { data: authData, error: authErr } = await supabase.auth.signUp({
-        email: form.email, password: form.password,
+        email: normalizeEmail(form.email), password: form.password,
         options: { data: { full_name: form.institution_name, role: 'institution' } }
       })
       if (authErr) throw authErr
       const res = await fetch('/api/register', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ type:'institution', user_id: authData.user?.id, ...form }),
+        body: JSON.stringify({ type:'institution', user_id: authData.user?.id, ...form, email: normalizeEmail(form.email) }),
       })
       if (!res.ok) throw new Error(await res.text())
       const params = new URLSearchParams({ name: form.institution_name, tier: 'standard', type: 'institution' })
@@ -59,7 +65,7 @@ export default function RegisterInstitutionPage() {
         </p>
         <div style={{ background:'#E1F5EE', borderRadius:8, padding:20, textAlign:'left', marginBottom:16 }}>
           <p style={{ fontWeight:700, color:'#0F6E56', margin:'0 0 8px' }}>💳 Payment Required — R449/month</p>
-          <p style={{ fontSize:14, color:'#555', margin:0 }}>Email proof of EFT payment to <strong>admin@islamicteachers.co.za</strong></p>
+          <p style={{ fontSize:14, color:'#555', margin:0 }}>Email proof of EFT payment to <strong>islamicteachersadmin@gmail.com</strong></p>
         </div>
       </div>
     </div>

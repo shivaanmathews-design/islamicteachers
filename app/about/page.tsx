@@ -37,7 +37,7 @@ export default function AboutPage() {
         </div>
         <div style={{ textAlign:'center', padding:'40px 20px', background:'#0F6E56', borderRadius:14 }}>
           <h2 style={{ color:'#fff', fontWeight:700, marginBottom:12 }}>Get in Touch</h2>
-          <p style={{ color:'#E1F5EE', marginBottom:20 }}><a href="mailto:admin@islamicteachers.co.za" style={{ color:'#BA7517', fontWeight:600, textDecoration:'none' }}>admin@islamicteachers.co.za</a></p>
+          <p style={{ color:'#E1F5EE', marginBottom:20 }}><a href="mailto:islamicteachersadmin@gmail.com" style={{ color:'#BA7517', fontWeight:600, textDecoration:'none' }}>islamicteachersadmin@gmail.com</a></p>
           <div style={{ display:'flex', gap:16, justifyContent:'center', flexWrap:'wrap' }}>
             <Link href="/contact" className="btn-gold">Contact Us</Link>
             <Link href="/register/teacher" className="btn-outline" style={{ color:'#fff', borderColor:'#fff' }}>Register as Teacher</Link>

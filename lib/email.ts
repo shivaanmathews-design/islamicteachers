@@ -2,7 +2,7 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = 'IslamicTeachers.co.za <noreply@islamicteachers.co.za>'
-const ADMIN = process.env.ADMIN_EMAIL || 'admin@islamicteachers.co.za'
+const ADMIN = process.env.ADMIN_EMAIL || 'islamicteachersadmin@gmail.com'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://islamicteachers.co.za'
 
 const brandHeader = `
@@ -116,14 +116,34 @@ export async function sendAdminNewListingNotification(
   })
 }
 
-export async function sendListingApproved(to: string, name: string, profileUrl: string, dashboardUrl: string) {
+export async function sendListingApproved(
+  to: string,
+  name: string,
+  profileUrl: string,
+  dashboardUrl: string,
+  type: 'teacher' | 'institution' = 'teacher'
+) {
+  const manageSteps = type === 'institution'
+    ? `
+      <li style="margin-bottom:8px;">Log in any time at <a href="${SITE_URL}/login" style="color:#0F6E56;">${SITE_URL.replace('https://','')}/login</a> with your email and password.</li>
+      <li style="margin-bottom:8px;"><strong>Edit your institution details</strong> — name, address, programmes, description and contact info — from the dashboard.</li>
+      <li style="margin-bottom:8px;">Keep your <strong>subjects &amp; programmes</strong> up to date so families find you in search.</li>
+      <li style="margin-bottom:8px;">Track how many people have <strong>viewed your profile</strong>.</li>
+      <li style="margin-bottom:8px;">Watch for your <strong>renewal reminder</strong> email each month to keep your listing active.</li>`
+    : `
+      <li style="margin-bottom:8px;">Log in any time at <a href="${SITE_URL}/login" style="color:#0F6E56;">${SITE_URL.replace('https://','')}/login</a> with your email and password.</li>
+      <li style="margin-bottom:8px;"><strong>Edit your profile</strong> — bio, subjects, rates, availability, photo and video — from your dashboard.</li>
+      <li style="margin-bottom:8px;">Toggle <strong>"taking new students"</strong> on or off as your schedule changes.</li>
+      <li style="margin-bottom:8px;">View <strong>enquiries</strong> from parents and students, plus your profile views.</li>
+      <li style="margin-bottom:8px;">Watch for your <strong>renewal reminder</strong> email to keep your listing active.</li>`
+
   await resend.emails.send({
     from: FROM, to,
-    subject: 'Your listing on IslamicTeachers.co.za is live!',
+    subject: 'Welcome to IslamicTeachers.co.za — your listing is live! 🎉',
     html: wrap(`
       <h2 style="color:#0F6E56;">Mabrook! Your listing is live 🎉</h2>
       <p>Assalamu Alaykum ${name},</p>
-      <p>Your listing on IslamicTeachers.co.za has been approved and is now visible to students and parents across South Africa.</p>
+      <p>Welcome to IslamicTeachers.co.za! Your listing has been approved and is now visible to students and parents across South Africa.</p>
       <div style="text-align:center;margin:24px 0;">
         <a href="${profileUrl}" style="display:inline-block;background:#0F6E56;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;margin:0 8px;">
           View My Profile
@@ -132,6 +152,36 @@ export async function sendListingApproved(to: string, name: string, profileUrl: 
           Go to Dashboard
         </a>
       </div>
+      <div style="background:#E1F5EE;border-left:4px solid #0F6E56;padding:16px 20px;border-radius:4px;margin:16px 0;">
+        <p style="margin:0 0 8px;font-weight:bold;color:#0F6E56;">How to manage your dashboard</p>
+        <ol style="margin:0;padding-left:20px;font-size:14px;color:#2C2C2A;line-height:1.6;">
+          ${manageSteps}
+        </ol>
+      </div>
+      <p>Any changes you make are saved instantly. If you need help, just reply to this email or contact us at ${ADMIN}.</p>
+      <p style="color:#2C2C2A;">JazakAllah Khair,<br/><strong>The IslamicTeachers.co.za Team</strong></p>
+    `),
+  })
+}
+
+export async function sendEnquiryConfirmationToEnquirer(
+  to: string,
+  enquirerName: string,
+  teacherName: string,
+  message: string
+) {
+  await resend.emails.send({
+    from: FROM, to,
+    subject: `Your enquiry to ${teacherName} — IslamicTeachers.co.za`,
+    html: wrap(`
+      <h2 style="color:#0F6E56;">Your enquiry has been sent ✅</h2>
+      <p>Assalamu Alaykum ${enquirerName},</p>
+      <p>This is a copy of the enquiry you sent through IslamicTeachers.co.za. We have forwarded it to <strong>${teacherName}</strong>, who will be in touch with you directly.</p>
+      <div style="background:#E1F5EE;padding:16px 20px;border-radius:6px;margin:16px 0;">
+        <p style="margin:0;"><strong>Teacher:</strong> ${teacherName}</p>
+        ${message ? `<p style="margin:12px 0 0;"><strong>Your message:</strong><br/>${message}</p>` : '<p style="margin:12px 0 0;color:#777;">(No message included)</p>'}
+      </div>
+      <p>If you don't hear back within a couple of days, you're welcome to send another enquiry or browse other teachers on our directory.</p>
       <p style="color:#2C2C2A;">JazakAllah Khair,<br/><strong>The IslamicTeachers.co.za Team</strong></p>
     `),
   })

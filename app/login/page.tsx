@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { normalizeEmail } from '@/lib/validation'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -16,7 +17,7 @@ export default function LoginPage() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true); setError('')
-    const { error: err, data } = await supabase.auth.signInWithPassword({ email, password })
+    const { error: err, data } = await supabase.auth.signInWithPassword({ email: normalizeEmail(email), password })
     if (err) { setError(err.message); setLoading(false); return }
 
     // Detect role and redirect
@@ -36,7 +37,7 @@ export default function LoginPage() {
   async function handleReset(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error: err } = await supabase.auth.resetPasswordForEmail(normalizeEmail(email), {
       redirectTo: `${window.location.origin}/login`,
     })
     if (err) { setError(err.message) } else { setResetSent(true) }

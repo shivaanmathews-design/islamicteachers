@@ -17,7 +17,7 @@ const sections = [
       'Step 2 — Teaching Details: Select the subjects you teach, your session type (in-person / online / both), age groups, years of experience, hourly rate, and provide two references (name + phone). Add a bio if you are on Standard or Premium.',
       'Step 3 — Select a Plan: Choose Free, Standard, or Premium. Read and individually tick all three policy checkboxes (Privacy Policy, Terms & Conditions, and Child Safety Policy) to unlock the Submit button.',
       'Click "Submit Registration". You will be redirected to the success page.',
-      'For paid plans, make your EFT payment using the banking details shown and email proof of payment to admin@islamicteachers.co.za.',
+      'For paid plans, make your EFT payment using the banking details shown and email proof of payment to islamicteachersadmin@gmail.com.',
       'We will verify your references and activate your listing within 2 business days.',
     ],
   },
@@ -30,7 +30,7 @@ const sections = [
       'Fill in your institution name, type, province, city, contact details, subjects offered, and a brief description.',
       'Create a password for your account.',
       'Read and tick all three policy checkboxes, then click "Submit Institution Registration".',
-      'Make your EFT payment and email proof to admin@islamicteachers.co.za.',
+      'Make your EFT payment and email proof to islamicteachersadmin@gmail.com.',
       'Your listing will be activated within 2 business days.',
     ],
   },
@@ -44,7 +44,7 @@ const sections = [
       'Click the "Profile" tab at the top of the dashboard.',
       'Update any of your details — name, city, suburb, bio, subjects, availability, etc.',
       'Click "Save Changes" when done. Your profile updates immediately.',
-      'Note: changing your listing tier requires contacting admin@islamicteachers.co.za.',
+      'Note: changing your listing tier requires contacting islamicteachersadmin@gmail.com.',
     ],
   },
   {
@@ -83,8 +83,8 @@ const sections = [
       'Standard (R99/month): Full profile with photo, bio, and a contact button. Dashboard access to update your details.',
       'Premium (R179/month): Everything in Standard, plus a ⭐ Featured badge and priority placement at the top of search results.',
       'Payments are made by EFT. Banking details are emailed to you after registration.',
-      'To upgrade your plan, email admin@islamicteachers.co.za with the subject line "Upgrade Plan — [Your Name]".',
-      'To cancel, email admin@islamicteachers.co.za. Your listing stays active until end of the current billing period.',
+      'To upgrade your plan, email islamicteachersadmin@gmail.com with the subject line "Upgrade Plan — [Your Name]".',
+      'To cancel, email islamicteachersadmin@gmail.com. Your listing stays active until end of the current billing period.',
     ],
   },
 ]
@@ -124,10 +124,10 @@ export default function HelpPage() {
             <ol style={{ paddingLeft:22, margin:0 }}>
               {s.steps.map((step, j) => (
                 <li key={j} style={{ fontSize:15, color:'#2C2C2A', lineHeight:1.8, marginBottom:10 }}>
-                  {step.includes('admin@islamicteachers.co.za')
-                    ? step.split('admin@islamicteachers.co.za').flatMap((part, idx, arr) =>
+                  {step.includes('islamicteachersadmin@gmail.com')
+                    ? step.split('islamicteachersadmin@gmail.com').flatMap((part, idx, arr) =>
                         idx < arr.length - 1
-                          ? [part, <a key={idx} href="mailto:admin@islamicteachers.co.za" style={{ color:'#0F6E56', fontWeight:600 }}>admin@islamicteachers.co.za</a>]
+                          ? [part, <a key={idx} href="mailto:islamicteachersadmin@gmail.com" style={{ color:'#0F6E56', fontWeight:600 }}>islamicteachersadmin@gmail.com</a>]
                           : [part]
                       )
                     : step
@@ -143,7 +143,7 @@ export default function HelpPage() {
           <h2 style={{ color:'#fff', fontWeight:700, marginBottom:12 }}>Still need help?</h2>
           <p style={{ color:'#E1F5EE', marginBottom:24, fontSize:15 }}>Our team is happy to assist you. Get in touch:</p>
           <div style={{ display:'flex', gap:16, justifyContent:'center', flexWrap:'wrap' }}>
-            <a href="mailto:admin@islamicteachers.co.za" className="btn-gold">📧 Email Us</a>
+            <a href="mailto:islamicteachersadmin@gmail.com" className="btn-gold">📧 Email Us</a>
             <Link href="/contact" className="btn-outline" style={{ color:'#fff', borderColor:'#fff' }}>Contact Form</Link>
           </div>
         </div>

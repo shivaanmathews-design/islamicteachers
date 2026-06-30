@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase'
-import { sendEnquiryToTeacher } from '@/lib/email'
+import { sendEnquiryToTeacher, sendEnquiryConfirmationToEnquirer } from '@/lib/email'
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
@@ -27,6 +27,11 @@ export async function POST(req: NextRequest) {
 
   // Send email to teacher
   await sendEnquiryToTeacher(teacher.email, teacher.full_name, body.enquirer_name, body.message || '')
+
+  // Send a copy/confirmation to the enquirer
+  if (body.enquirer_email) {
+    await sendEnquiryConfirmationToEnquirer(body.enquirer_email, body.enquirer_name, teacher.full_name, body.message || '')
+  }
 
   return NextResponse.json({ success: true, teacher_email: teacher.email, teacher_whatsapp: teacher.whatsapp })
 }

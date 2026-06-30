@@ -6,10 +6,16 @@ import { notFound } from 'next/navigation'
 import ContactModal from '@/components/ContactModal'
 import ReviewSection from '@/components/ReviewSection'
 
+// A URL param is either a UUID (the teacher id) or a text slug. We must query
+// the matching column — comparing the uuid `id` column to a non-uuid slug
+// throws a DB error and makes the page 404.
+const isUuid = (v: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v)
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const db = createServiceClient()
-  const { data: t } = await db.from('teachers').select('full_name,city,province,subjects,session_type').or(`slug.eq.${slug},id.eq.${slug}`).single()
+  const col = isUuid(slug) ? 'id' : 'slug'
+  const { data: t } = await db.from('teachers').select('full_name,city,province,subjects,session_type').eq(col, slug).single()
   if (!t) return { title: 'Teacher Not Found' }
   const subjectLabels = (t.subjects as string[]).map((s:string) => SUBJECTS.find(x=>x.value===s)?.label).filter(Boolean).join(', ')
   return {
@@ -21,7 +27,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function TeacherProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const db = createServiceClient()
-  const { data: teacher } = await db.from('teachers').select('*').or(`slug.eq.${slug},id.eq.${slug}`).eq('listing_status','active').single()
+  const col = isUuid(slug) ? 'id' : 'slug'
+  const { data: teacher } = await db.from('teachers').select('*').eq(col, slug).eq('listing_status','active').single()
   if (!teacher) notFound()
 
   const t = teacher as Teacher

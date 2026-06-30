@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import type { Teacher } from '@/lib/types'
+import { nameError, normalizeEmail, lettersOnly } from '@/lib/validation'
 
 export default function ContactModal({ teacher }: { teacher: Teacher }) {
   const [open, setOpen] = useState(false)
@@ -9,14 +10,18 @@ export default function ContactModal({ teacher }: { teacher: Teacher }) {
   const [msg, setMsg] = useState('')
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault()
+    const nameErr = nameError(name, 'Your name')
+    if (nameErr) { setError(nameErr); return }
+    setError('')
     setLoading(true)
     await fetch('/api/enquiry', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teacher_id: teacher.id, enquirer_name: name, enquirer_email: email, message: msg }),
+      body: JSON.stringify({ teacher_id: teacher.id, enquirer_name: name.trim().replace(/\s+/g, ' '), enquirer_email: normalizeEmail(email), message: msg }),
     })
     setSent(true)
     setLoading(false)
@@ -73,9 +78,10 @@ export default function ContactModal({ teacher }: { teacher: Teacher }) {
             ) : (
               <form onSubmit={handleSend}>
                 <h3 style={{ color:'#0F6E56', marginBottom:20 }}>Contact {teacher.full_name}</h3>
+                {error && <div style={{ background:'#fee', color:'#c00', padding:'10px 14px', borderRadius:8, marginBottom:16, fontSize:13 }}>{error}</div>}
                 <div style={{ marginBottom:16 }}>
                   <label className="form-label">Your Name *</label>
-                  <input className="form-input" required value={name} onChange={e => setName(e.target.value)} placeholder="Your full name" />
+                  <input className="form-input" required value={name} onChange={e => setName(lettersOnly(e.target.value))} placeholder="First name and surname" />
                 </div>
                 <div style={{ marginBottom:16 }}>
                   <label className="form-label">Your Email *</label>

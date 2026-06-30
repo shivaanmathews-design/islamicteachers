@@ -214,7 +214,7 @@ export default function TeacherDashboard() {
                 <p style={{ fontSize:14, color:'#555', margin:0 }}>{teacher.listing_status === 'active' ? 'Active listing' : teacher.listing_status === 'pending' ? 'Pending review' : 'Inactive'}</p>
               </div>
               <p style={{ fontSize:14, color:'#555', marginBottom:20 }}>
-                To upgrade your plan, send an email to <strong>admin@islamicteachers.co.za</strong> with the subject line <strong>"Upgrade Plan — {teacher.full_name}"</strong>.
+                To upgrade your plan, send an email to <strong>islamicteachersadmin@gmail.com</strong> with the subject line <strong>"Upgrade Plan — {teacher.full_name}"</strong>.
               </p>
               <div style={{ background:'#fff7e6', border:'1px solid #f0c060', borderRadius:8, padding:16 }}>
                 <p style={{ fontWeight:700, color:'#BA7517', margin:'0 0 8px' }}>Plans available:</p>

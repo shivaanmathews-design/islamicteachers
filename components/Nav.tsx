@@ -39,10 +39,13 @@ export default function Nav() {
     : '/dashboard/teacher'
 
   const links = [
+    { href: '/', label: 'Home' },
     { href: '/find-a-teacher', label: 'Find a Teacher' },
     { href: '/register/teacher', label: 'Register as Teacher' },
     { href: '/register/institution', label: 'Register Institution' },
     { href: '/pricing', label: 'Pricing' },
+    { href: '/blog', label: 'Blog' },
+    { href: '/workshops', label: 'Workshops' },
     { href: '/about', label: 'About' },
     { href: '/contact', label: 'Contact' },
   ]
@@ -51,8 +54,13 @@ export default function Nav() {
     <nav className="sticky top-0 z-50 shadow-md" style={{ background: '#0F6E56' }}>
       <div className="container" style={{ padding: '0 20px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
 
+        {/* Desktop logo — left, links to homepage */}
+        <Link href="/" className="hidden md:block no-underline" style={{ position: 'absolute', left: 20 }}>
+          <img src="/logo.png" alt="IslamicTeachers.co.za — Home" style={{ height: 40, width: 'auto', objectFit: 'contain', borderRadius: 8, background: '#fff', padding: 4 }} />
+        </Link>
+
         {/* Desktop links — centred */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-5" style={{ fontSize: 13 }}>
           {links.map(l => (
             <Link key={l.href} href={l.href}
               style={{ color: pathname === l.href ? '#E1F5EE' : '#ffffff', fontSize: 14, fontWeight: 500, textDecoration: 'none', opacity: pathname === l.href ? 1 : 0.85 }}

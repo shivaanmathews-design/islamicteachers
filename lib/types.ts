@@ -138,3 +138,30 @@ export interface Enquiry {
   created_at: string
 }
 
+export interface BlogPost {
+  id: string
+  title: string
+  slug: string
+  excerpt?: string
+  content: string
+  cover_image_url?: string
+  author?: string
+  published: boolean
+  created_at: string
+  updated_at?: string
+}
+
+export interface Workshop {
+  id: string
+  title: string
+  slug: string
+  description: string
+  cover_image_url?: string
+  location?: string
+  event_date?: string
+  price?: string
+  registration_url?: string
+  published: boolean
+  created_at: string
+}
+

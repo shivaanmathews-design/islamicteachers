@@ -45,7 +45,7 @@ export default async function HomePage() {
         <div className="container" style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '80px 20px' }}>
 
           {/* Logo */}
-          <div style={{ marginBottom: 28 }}>
+          <div style={{ marginBottom: 28, display: 'flex', justifyContent: 'center' }}>
             <img
               src="/logo.png"
               alt="IslamicTeachers.co.za"

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { SUBJECTS, PROVINCES, HOURLY_RATES } from '@/lib/types'
+import { nameError, phoneError, normalizeEmail, digitsOnly, lettersOnly } from '@/lib/validation'
 
 const TIERS = [
   { id:'free',     name:'Free',      price:'R0/month',     reg:'R0',    features:['Basic listing in search','Province, city & subjects shown','No photo or bio','No contact button'] },
@@ -67,7 +68,15 @@ export default function RegisterTeacherPage() {
     child_safety_consent:false,
   })
 
-  function set(k: string, v: any) { setForm(f => ({ ...f, [k]: v })) }
+  const NAME_FIELDS = ['full_name', 'ref1_name', 'ref2_name']
+  const PHONE_FIELDS = ['whatsapp', 'ref1_phone', 'ref2_phone']
+  function set(k: string, v: any) {
+    if (typeof v === 'string') {
+      if (NAME_FIELDS.includes(k)) v = lettersOnly(v)
+      else if (PHONE_FIELDS.includes(k)) v = digitsOnly(v).slice(0, 10)
+    }
+    setForm(f => ({ ...f, [k]: v }))
+  }
 
   function toggleArray(key: string, val: string) {
     setForm(f => {
@@ -78,13 +87,19 @@ export default function RegisterTeacherPage() {
 
   function validateStep(s: number) {
     if (s === 0) {
-      if (!form.full_name) return 'Full name is required'
+      const nameErr = nameError(form.full_name, 'Full name')
+      if (nameErr) return nameErr
       if (!form.gender) return 'Gender is required'
       if (!form.province) return 'Province is required'
       if (!form.city) return 'City is required'
       if (!form.email) return 'Email is required'
-      if (!form.whatsapp) return 'WhatsApp number is required'
+      const waErr = phoneError(form.whatsapp, 'WhatsApp number')
+      if (waErr) return waErr
       if (!form.password || form.password.length < 8) return 'Password must be at least 8 characters'
+      if (!/[A-Z]/.test(form.password)) return 'Password must contain at least one uppercase letter'
+      if (!/[a-z]/.test(form.password)) return 'Password must contain at least one lowercase letter'
+      if (!/[0-9]/.test(form.password)) return 'Password must contain at least one number'
+      if (!/[^A-Za-z0-9]/.test(form.password)) return 'Password must contain at least one special character (!@#$%^&* etc.)'
       if (form.password !== form.confirm_password) return 'Passwords do not match'
       if (!form.whatsapp_consent) return 'WhatsApp consent is required'
     }
@@ -93,8 +108,10 @@ export default function RegisterTeacherPage() {
       if (!form.session_type) return 'Session type is required'
       if (!form.age_groups.length) return 'Select at least one age group'
       if (!form.hourly_rate) return 'Hourly rate is required'
-      if (!form.ref1_name || !form.ref1_phone) return 'Reference 1 is required (name and phone)'
-      if (!form.ref2_name || !form.ref2_phone) return 'Reference 2 is required (name and phone)'
+      const r1n = nameError(form.ref1_name, 'Reference 1 name'); if (r1n) return r1n
+      const r1p = phoneError(form.ref1_phone, 'Reference 1 phone'); if (r1p) return r1p
+      const r2n = nameError(form.ref2_name, 'Reference 2 name'); if (r2n) return r2n
+      const r2p = phoneError(form.ref2_phone, 'Reference 2 phone'); if (r2p) return r2p
     }
     if (s === 2) {
       if (!form.privacy_consent) return 'You must read and accept the Privacy Policy'
@@ -117,7 +134,7 @@ export default function RegisterTeacherPage() {
     setLoading(true); setError('')
     try {
       const { data: authData, error: authErr } = await supabase.auth.signUp({
-        email: form.email, password: form.password,
+        email: normalizeEmail(form.email), password: form.password,
         options: { data: { full_name: form.full_name, role: 'teacher' } }
       })
       if (authErr) throw authErr
@@ -129,6 +146,7 @@ export default function RegisterTeacherPage() {
           type: 'teacher',
           user_id: authData.user?.id,
           ...form,
+          email: normalizeEmail(form.email),
           references_data: [
             { name: form.ref1_name, relationship: form.ref1_rel, phone: form.ref1_phone },
             { name: form.ref2_name, relationship: form.ref2_rel, phone: form.ref2_phone },
@@ -159,7 +177,7 @@ export default function RegisterTeacherPage() {
             <p style={{ margin:'0 0 4px', fontSize:14 }}>Plan: <strong>{form.listing_tier.charAt(0).toUpperCase()+form.listing_tier.slice(1)}</strong></p>
             <p style={{ margin:'0 0 4px', fontSize:14 }}>Amount: <strong>{TIERS.find(t=>t.id===form.listing_tier)?.reg}</strong></p>
             <p style={{ margin:'0 0 12px', fontSize:14 }}>Reference: <strong>{form.full_name} — {form.listing_tier}</strong></p>
-            <p style={{ margin:0, fontSize:13, color:'#555' }}>Email proof of payment to <strong>admin@islamicteachers.co.za</strong></p>
+            <p style={{ margin:0, fontSize:13, color:'#555' }}>Email proof of payment to <strong>islamicteachersadmin@gmail.com</strong></p>
           </div>
         )}
         <p style={{ fontSize:13, color:'#888' }}>Check your email (<strong>{form.email}</strong>) for your confirmation.</p>
@@ -192,12 +210,45 @@ export default function RegisterTeacherPage() {
           {/* STEP 1 */}
           {step === 0 && (
             <div style={{ display:'grid', gap:20 }}>
-              {[['Full Name','full_name','text'],['City','city','text'],['Suburb','suburb','text'],['Email Address','email','email'],['WhatsApp Number','whatsapp','tel'],['Password','password','password'],['Confirm Password','confirm_password','password']].map(([label,key,type])=>(
+              {[['Full Name','full_name','text'],['City','city','text'],['Suburb','suburb','text'],['Email Address','email','email'],['WhatsApp Number','whatsapp','tel']].map(([label,key,type])=>(
                 <div key={key}>
                   <label className="form-label">{label}{key==='suburb'?' (optional)':' *'}</label>
                   <input type={type} className="form-input" value={(form as any)[key]} onChange={e=>set(key,e.target.value)} />
                 </div>
               ))}
+
+              {/* Password with live requirements */}
+              <div>
+                <label className="form-label">Password *</label>
+                <input type="password" className="form-input" value={form.password} onChange={e=>set('password',e.target.value)} />
+                {form.password.length > 0 && (
+                  <div style={{ marginTop:10, padding:'12px 16px', background:'#f9f9f9', borderRadius:8, border:'1px solid #e8e8e8' }}>
+                    {[
+                      { label:'At least 8 characters', ok: form.password.length >= 8 },
+                      { label:'One uppercase letter (A–Z)', ok: /[A-Z]/.test(form.password) },
+                      { label:'One lowercase letter (a–z)', ok: /[a-z]/.test(form.password) },
+                      { label:'One number (0–9)', ok: /[0-9]/.test(form.password) },
+                      { label:'One special character (!@#$%^&*…)', ok: /[^A-Za-z0-9]/.test(form.password) },
+                    ].map(({ label, ok }) => (
+                      <div key={label} style={{ display:'flex', gap:8, alignItems:'center', marginBottom:6, fontSize:13 }}>
+                        <span style={{ color: ok ? '#0F6E56' : '#aaa', fontWeight:700, fontSize:15, lineHeight:1 }}>{ok ? '✓' : '○'}</span>
+                        <span style={{ color: ok ? '#0F6E56' : '#888' }}>{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <label className="form-label">Confirm Password *</label>
+                <input type="password" className="form-input" value={form.confirm_password} onChange={e=>set('confirm_password',e.target.value)} />
+                {form.confirm_password.length > 0 && (
+                  <p style={{ fontSize:13, marginTop:6, color: form.password === form.confirm_password ? '#0F6E56' : '#c00', fontWeight:600 }}>
+                    {form.password === form.confirm_password ? '✓ Passwords match' : '✗ Passwords do not match'}
+                  </p>
+                )}
+              </div>
               <div>
                 <label className="form-label">Gender *</label>
                 <select className="form-input" value={form.gender} onChange={e=>set('gender',e.target.value)}>

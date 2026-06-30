@@ -22,7 +22,8 @@ export default function PricingPage() {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:24, maxWidth:1100, margin:'0 auto' }}>
           {tiers.map(t=>(
             <div key={t.id} style={{ background:'#fff', borderRadius:14, border: t.highlight?'2.5px solid #BA7517':'1.5px solid #e8e8e8',
-              padding:32, position:'relative', boxShadow: t.highlight?'0 8px 32px rgba(186,117,23,0.12)':'none' }}>
+              padding:32, position:'relative', boxShadow: t.highlight?'0 8px 32px rgba(186,117,23,0.12)':'none',
+              display:'flex', flexDirection:'column' }}>
               {t.highlight && <div style={{ position:'absolute', top:-12, left:'50%', transform:'translateX(-50%)',
                 background:'#BA7517', color:'#fff', fontSize:11, fontWeight:700, padding:'4px 16px', borderRadius:20 }}>MOST POPULAR</div>}
               <h2 style={{ color:'#0F6E56', fontWeight:700, fontSize:20, margin:'0 0 4px' }}>{t.name}</h2>
@@ -30,7 +31,7 @@ export default function PricingPage() {
                 <span style={{ fontSize:32, fontWeight:700, color:'#BA7517' }}>{t.price}</span>
                 <span style={{ fontSize:14, color:'#888', marginLeft:6 }}>{t.period}</span>
               </div>
-              <ul style={{ paddingLeft:0, listStyle:'none', margin:'0 0 28px' }}>
+              <ul style={{ paddingLeft:0, listStyle:'none', margin:'0 0 28px', flex:1 }}>
                 {t.features.map(f=>(
                   <li key={f} style={{ display:'flex', gap:10, marginBottom:10, fontSize:14, color:'#555', alignItems:'flex-start' }}>
                     <span style={{ color:'#0F6E56', fontWeight:700, marginTop:1 }}>✓</span>
@@ -50,7 +51,7 @@ export default function PricingPage() {
             We currently accept payment via EFT (Electronic Funds Transfer). After registering, you'll receive our banking details by email.
             Your listing goes live within <strong>2 business days</strong> of payment confirmation.
           </p>
-          <p style={{ fontSize:14, color:'#888', margin:0 }}>Questions? Email <strong>admin@islamicteachers.co.za</strong></p>
+          <p style={{ fontSize:14, color:'#888', margin:0 }}>Questions? Email <strong>islamicteachersadmin@gmail.com</strong></p>
         </div>
 
         {/* FAQ */}
@@ -58,7 +59,7 @@ export default function PricingPage() {
           <h2 style={{ color:'#0F6E56', fontWeight:700, fontSize:22, marginBottom:28, textAlign:'center' }}>Frequently Asked Questions</h2>
           {[
             ['Is it really free to search?','Yes, completely free. Students and parents can browse, filter, and view all teacher profiles with no registration required.'],
-            ['Can I cancel my subscription?','Yes, contact admin@islamicteachers.co.za at any time to cancel. Your listing will remain active until the end of the current billing period.'],
+            ['Can I cancel my subscription?','Yes, contact islamicteachersadmin@gmail.com at any time to cancel. Your listing will remain active until the end of the current billing period.'],
             ['How long does approval take?','We aim to review all applications within 2 business days. We will contact your references before approving.'],
             ['Can I upgrade from Free to Standard or Premium?','Yes, simply email us to request an upgrade and make an EFT payment.'],
             ['Is there a once-off registration fee?','The amount shown is the first month\'s payment. There is no separate registration fee.'],

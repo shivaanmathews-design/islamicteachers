@@ -48,8 +48,8 @@ export default function RegistrationSuccessPage({
             </div>
             <p style={{ margin:'12px 0 0', fontSize:13, color:'#555' }}>
               Email proof of payment to{' '}
-              <a href="mailto:admin@islamicteachers.co.za" style={{ color:'#0F6E56', fontWeight:600 }}>
-                admin@islamicteachers.co.za
+              <a href="mailto:islamicteachersadmin@gmail.com" style={{ color:'#0F6E56', fontWeight:600 }}>
+                islamicteachersadmin@gmail.com
               </a>
             </p>
           </div>
@@ -78,7 +78,7 @@ export default function RegistrationSuccessPage({
           Need help?{' '}
           <Link href="/help" style={{ color:'#0F6E56', fontWeight:600 }}>View our How-To Guide</Link>
           {' '}or{' '}
-          <a href="mailto:admin@islamicteachers.co.za" style={{ color:'#0F6E56', fontWeight:600 }}>email us</a>
+          <a href="mailto:islamicteachersadmin@gmail.com" style={{ color:'#0F6E56', fontWeight:600 }}>email us</a>
         </p>
       </div>
     </div>

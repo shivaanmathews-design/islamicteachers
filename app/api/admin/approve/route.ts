@@ -16,6 +16,6 @@ export async function POST(req: NextRequest) {
   const profileUrl = type === 'institution' ? `${siteUrl}/institutions/${slug}` : `${siteUrl}/teachers/${slug}`
   const dashUrl = type === 'institution' ? `${siteUrl}/dashboard/institution` : `${siteUrl}/dashboard/teacher`
 
-  await sendListingApproved(data.email, name, profileUrl, dashUrl)
+  await sendListingApproved(data.email, name, profileUrl, dashUrl, type === 'institution' ? 'institution' : 'teacher')
   return NextResponse.json({ success: true })
 }
