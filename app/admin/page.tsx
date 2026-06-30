@@ -181,6 +181,9 @@ export default function AdminPanel() {
             </p>
           </div>
           <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
+            <a href="/" style={{ padding:'8px 16px', borderRadius:6, border:'none', cursor:'pointer', fontSize:13, fontWeight:700, background:'#fff', color:'#0F6E56', textDecoration:'none', display:'inline-flex', alignItems:'center', gap:6 }}>
+              🏠 Home
+            </a>
             {[
               { label:`⏳ Pending (${pending.length})`, t:'pending' as AdminTab },
               { label:`📋 All Teachers (${allTeachers.length})`, t:'teachers' as AdminTab },
