@@ -12,7 +12,7 @@ export default function Footer() {
             <p style={{ color: '#E1F5EE', fontSize: 14, margin: '0 0 16px' }}>
               Find trusted Islamic teachers and institutions across South Africa.
             </p>
-            <a href="mailto:islamicteachersadmin@gmail.com" style={{ color: '#5DCAA5', fontSize: 13, margin: 0, textDecoration: 'none' }}>islamicteachersadmin@gmail.com</a>
+            <a href="mailto:admin@mizan.co.za" style={{ color: '#5DCAA5', fontSize: 13, margin: 0, textDecoration: 'none' }}>admin@mizan.co.za</a>
           </div>
           <div>
             <h4 style={{ color: '#5DCAA5', fontSize: 13, fontWeight: 600, marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>For Students</h4>
