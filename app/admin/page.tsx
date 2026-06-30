@@ -175,8 +175,10 @@ export default function AdminPanel() {
       <div style={{ background:'#0F6E56', padding:'20px 0' }}>
         <div className="container" style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:12 }}>
           <div>
-            <h1 style={{ color:'#fff', fontSize:20, fontWeight:700, margin:'0 0 4px' }}>Admin Panel</h1>
-            <p style={{ color:'#E1F5EE', fontSize:13, margin:0 }}>IslamicTeachers.co.za</p>
+            <a href="/" style={{ display:'inline-block', color:'#fff', fontSize:20, fontWeight:700, margin:'0 0 4px', textDecoration:'none' }}>Admin Panel</a>
+            <p style={{ margin:0 }}>
+              <a href="/" style={{ color:'#E1F5EE', fontSize:13, textDecoration:'none' }}>← IslamicTeachers.co.za — View Site</a>
+            </p>
           </div>
           <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
             {[

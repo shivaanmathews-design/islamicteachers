@@ -6,13 +6,13 @@ export default function Footer() {
       <div className="container">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 40, marginBottom: 40 }}>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 8, letterSpacing: 0.5 }}>
+            <Link href="/" style={{ display: 'inline-block', textDecoration: 'none', fontWeight: 700, fontSize: 16, marginBottom: 8, letterSpacing: 0.5, color: '#fff' }}>
               ISLAMICTEACHERS<span style={{ color: '#5DCAA5' }}>.CO.ZA</span>
-            </div>
+            </Link>
             <p style={{ color: '#E1F5EE', fontSize: 14, margin: '0 0 16px' }}>
               Find trusted Islamic teachers and institutions across South Africa.
             </p>
-            <p style={{ color: '#5DCAA5', fontSize: 13, margin: 0 }}>admin@islamicteachers.co.za</p>
+            <a href="mailto:islamicteachersadmin@gmail.com" style={{ color: '#5DCAA5', fontSize: 13, margin: 0, textDecoration: 'none' }}>islamicteachersadmin@gmail.com</a>
           </div>
           <div>
             <h4 style={{ color: '#5DCAA5', fontSize: 13, fontWeight: 600, marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>For Students</h4>
