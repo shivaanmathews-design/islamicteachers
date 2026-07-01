@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createServiceClient } from '@/lib/supabase'
 import PremiumCarousel from '@/components/PremiumCarousel'
 import { SUBJECTS, CITIES } from '@/lib/types'
+import { slugify } from '@/lib/supabase'
 import type { Teacher } from '@/lib/types'
 
 async function getFeaturedTeachers(): Promise<Teacher[]> {
@@ -133,7 +134,7 @@ export default async function HomePage() {
           <h2 style={{ textAlign:'center',color:'#0F6E56',fontSize:28,fontWeight:700,marginBottom:40 }}>Find Teachers by City</h2>
           <div style={{ display:'flex',flexWrap:'wrap',gap:12,justifyContent:'center' }}>
             {CITIES.map(c=>(
-              <Link key={c} href={`/islamic-teachers-${c.toLowerCase().replace(/\s+/g,'-')}`}
+              <Link key={c} href={`/islamic-teachers-${slugify(c)}`}
                 style={{ padding:'10px 20px',borderRadius:40,border:'1.5px solid #5DCAA5',background:'#fff',color:'#0F6E56',fontWeight:600,fontSize:14,textDecoration:'none',transition:'all .15s' }}>
                 📍 {c}
               </Link>
