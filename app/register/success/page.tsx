@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { PLAN_PRICES, PLAN_LABELS, proRata, formatZAR, formatDate, type PlanTier } from '@/lib/pricing'
 
 export default function RegistrationSuccessPage({
   searchParams,
@@ -16,6 +17,8 @@ export default function RegistrationSuccessPage({
   }
   const selected = tierLabels[tier] ?? tierLabels.free
   const isPaid = tier !== 'free'
+  const monthly = PLAN_PRICES[(tier as PlanTier)] ?? 0
+  const pr = isPaid ? proRata(monthly) : null
 
   return (
     <div style={{ minHeight:'80vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'40px 20px', background:'#f9f9f9' }}>
@@ -34,8 +37,19 @@ export default function RegistrationSuccessPage({
           <div style={{ background:'#E1F5EE', borderRadius:10, padding:24, marginBottom:28, textAlign:'left', border:'1.5px solid #5DCAA5' }}>
             <p style={{ margin:'0 0 12px', fontWeight:700, color:'#0F6E56', fontSize:15 }}>💳 Payment Required to Activate</p>
             <p style={{ margin:'0 0 6px', fontSize:14, color:'#2C2C2A' }}>
-              Plan: <strong>{selected.label}</strong> &nbsp;|&nbsp; Amount: <strong>{selected.price}/month</strong>
+              Plan: <strong>{selected.label}</strong> &nbsp;|&nbsp; Standard price: <strong>{selected.price}/month</strong>
             </p>
+            {pr && (
+              <div style={{ background:'#fff', borderRadius:8, padding:'12px 14px', border:'1px dashed #5DCAA5', margin:'0 0 12px' }}>
+                <p style={{ margin:'0 0 4px', fontSize:14, color:'#0F6E56', fontWeight:700 }}>
+                  Pay now (pro-rata): {formatZAR(pr.amount)}
+                </p>
+                <p style={{ margin:0, fontSize:13, color:'#555', lineHeight:1.6 }}>
+                  This covers the remaining {pr.daysRemaining} day{pr.daysRemaining !== 1 ? 's' : ''} of this month.
+                  Your normal <strong>{selected.price}/month</strong> billing then starts on <strong>{formatDate(pr.nextBillingDate)}</strong>.
+                </p>
+              </div>
+            )}
             <p style={{ margin:'0 0 16px', fontSize:14, color:'#2C2C2A' }}>
               Reference: <strong>{name} — {selected.label}</strong>
             </p>

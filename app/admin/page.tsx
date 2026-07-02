@@ -49,6 +49,8 @@ export default function AdminPanel() {
   }, [router])
 
   async function loadData() {
+    // Apply any scheduled plan changes that are now due before loading.
+    await fetch('/api/plan', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'apply-due' }) }).catch(()=>{})
     const { data: p } = await supabase.from('teachers').select('*').eq('listing_status','pending').order('created_at', { ascending: true })
     setPending((p || []) as Teacher[])
     const { data: a } = await supabase.from('teachers').select('*').order('created_at', { ascending: false }).limit(100)
@@ -303,6 +305,11 @@ export default function AdminPanel() {
                           color:t.listing_tier==='premium'?'#BA7517':t.listing_tier==='standard'?'#0F6E56':'#888' }}>
                           {t.listing_tier}
                         </span>
+                        {t.pending_tier && (
+                          <span title={`Changes to ${t.pending_tier} on ${t.pending_tier_effective_date}`} style={{ display:'block', marginTop:4, fontSize:10, color:'#BA7517', fontWeight:700 }}>
+                            → {t.pending_tier} ({t.pending_tier_effective_date})
+                          </span>
+                        )}
                       </td>
                       <td style={{ padding:'12px 16px' }}>
                         <span style={{ padding:'3px 8px', borderRadius:10, fontSize:11, fontWeight:700,

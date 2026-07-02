@@ -76,6 +76,8 @@ export interface Teacher {
   video_intro_url?: string
   listing_tier: ListingTier
   listing_status: ListingStatus
+  pending_tier?: ListingTier | null
+  pending_tier_effective_date?: string | null
   subscription_start_date?: string
   subscription_renewal_date?: string
   profile_views: number

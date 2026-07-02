@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { SUBJECTS, PROVINCES, HOURLY_RATES } from '@/lib/types'
 import type { Subject } from '@/lib/types'
 import type { Teacher } from '@/lib/types'
+import { PLAN_PRICES, PLAN_LABELS, PLAN_FEATURES, formatZAR, formatDate, firstOfNextMonth, type PlanTier } from '@/lib/pricing'
 import Link from 'next/link'
 
 export default function TeacherDashboard() {
@@ -13,17 +14,37 @@ export default function TeacherDashboard() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
+  const [planMsg, setPlanMsg] = useState('')
+  const [planBusy, setPlanBusy] = useState(false)
   const [tab, setTab] = useState<'overview'|'profile'|'subscription'>('overview')
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) { router.push('/login'); return }
+      // Apply any scheduled plan changes that are now due, then load fresh data.
+      await fetch('/api/plan', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'apply-due' }) }).catch(()=>{})
       const { data } = await supabase.from('teachers').select('*').eq('user_id', session.user.id).single()
       if (!data) { router.push('/register/teacher'); return }
       setTeacher(data as Teacher)
       setLoading(false)
     })
   }, [router])
+
+  async function requestPlan(newTier: PlanTier) {
+    if (!teacher) return
+    setPlanBusy(true); setPlanMsg('')
+    const res = await fetch('/api/plan', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'request', teacher_id: teacher.id, new_tier: newTier }),
+    })
+    const json = await res.json()
+    if (!res.ok) { setPlanMsg('⚠️ ' + (json.error || 'Could not update plan.')); setPlanBusy(false); return }
+    const { data } = await supabase.from('teachers').select('*').eq('id', teacher.id).single()
+    if (data) setTeacher(data as Teacher)
+    setPlanMsg(json.cleared ? '✅ Pending plan change cancelled.' : `✅ Your plan will change to ${json.label} on ${formatDate(firstOfNextMonth())}.`)
+    setPlanBusy(false)
+    setTimeout(() => setPlanMsg(''), 6000)
+  }
 
   async function save() {
     if (!teacher) return
@@ -206,21 +227,65 @@ export default function TeacherDashboard() {
 
         {/* SUBSCRIPTION */}
         {tab === 'subscription' && (
-          <div style={{ maxWidth:600 }}>
+          <div style={{ maxWidth:640 }}>
+            {planMsg && <div style={{ background:'#E1F5EE', color:'#0F6E56', padding:'12px 16px', borderRadius:8, marginBottom:20, fontWeight:600 }}>{planMsg}</div>}
+
             <div style={{ background:'#fff', borderRadius:12, padding:28, border:'1.5px solid #e8e8e8', marginBottom:20 }}>
               <h2 style={{ color:'#0F6E56', fontWeight:700, marginBottom:20 }}>Current Subscription</h2>
-              <div style={{ padding:'16px 20px', background:'#E1F5EE', borderRadius:8, marginBottom:20 }}>
-                <p style={{ fontWeight:700, color:'#0F6E56', margin:'0 0 4px', fontSize:18 }}>{teacher.listing_tier.charAt(0).toUpperCase()+teacher.listing_tier.slice(1)} Plan</p>
+              <div style={{ padding:'16px 20px', background:'#E1F5EE', borderRadius:8, marginBottom:16 }}>
+                <p style={{ fontWeight:700, color:'#0F6E56', margin:'0 0 4px', fontSize:18 }}>{PLAN_LABELS[teacher.listing_tier as PlanTier] || teacher.listing_tier} Plan
+                  {teacher.listing_tier !== 'free' && <span style={{ fontSize:14, fontWeight:600, color:'#555' }}> — {formatZAR(PLAN_PRICES[teacher.listing_tier as PlanTier])}/month</span>}
+                </p>
                 <p style={{ fontSize:14, color:'#555', margin:0 }}>{teacher.listing_status === 'active' ? 'Active listing' : teacher.listing_status === 'pending' ? 'Pending review' : 'Inactive'}</p>
               </div>
-              <p style={{ fontSize:14, color:'#555', marginBottom:20 }}>
-                To upgrade your plan, send an email to <strong>islamicteachersadmin@gmail.com</strong> with the subject line <strong>"Upgrade Plan — {teacher.full_name}"</strong>.
+
+              {teacher.pending_tier && teacher.pending_tier_effective_date && (
+                <div style={{ background:'#fff7e6', border:'1px solid #f0c060', borderRadius:8, padding:'14px 16px', marginBottom:16 }}>
+                  <p style={{ margin:0, fontSize:14, color:'#BA7517', fontWeight:700 }}>⏳ Scheduled change</p>
+                  <p style={{ margin:'4px 0 0', fontSize:14, color:'#555' }}>
+                    Your plan will switch to <strong>{PLAN_LABELS[teacher.pending_tier as PlanTier]}</strong> on <strong>{formatDate(new Date(teacher.pending_tier_effective_date))}</strong>.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Plan switcher */}
+            <div style={{ background:'#fff', borderRadius:12, padding:28, border:'1.5px solid #e8e8e8' }}>
+              <h2 style={{ color:'#0F6E56', fontWeight:700, marginBottom:6 }}>Switch Plan</h2>
+              <p style={{ fontSize:13, color:'#888', margin:'0 0 20px', lineHeight:1.6 }}>
+                Plan changes take effect on the <strong>1st of next month</strong>. For paid plans, pay by EFT and email proof to{' '}
+                <a href="mailto:islamicteachersadmin@gmail.com" style={{ color:'#0F6E56', fontWeight:600 }}>islamicteachersadmin@gmail.com</a>.
               </p>
-              <div style={{ background:'#fff7e6', border:'1px solid #f0c060', borderRadius:8, padding:16 }}>
-                <p style={{ fontWeight:700, color:'#BA7517', margin:'0 0 8px' }}>Plans available:</p>
-                <p style={{ fontSize:13, margin:'0 0 4px' }}>• <strong>Standard</strong> — R99/month (photo, bio, contact button)</p>
-                <p style={{ fontSize:13, margin:'0 0 4px' }}>• <strong>Premium</strong> — R179/month (featured placement, video intro)</p>
-                <p style={{ fontSize:13, margin:0, color:'#888' }}>Payment by EFT only.</p>
+
+              <div style={{ display:'grid', gap:12 }}>
+                {(['free','standard','premium'] as PlanTier[]).map(tier => {
+                  const isCurrent = teacher.listing_tier === tier
+                  const isPending = teacher.pending_tier === tier
+                  return (
+                    <div key={tier} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:12, flexWrap:'wrap',
+                      padding:'16px 18px', borderRadius:10, border:`1.5px solid ${isCurrent ? '#5DCAA5' : isPending ? '#f0c060' : '#e8e8e8'}`,
+                      background: isCurrent ? '#E1F5EE' : isPending ? '#fff7e6' : '#fff' }}>
+                      <div>
+                        <p style={{ margin:'0 0 2px', fontWeight:700, color:'#0F6E56' }}>
+                          {PLAN_LABELS[tier]} {tier !== 'free' && <span style={{ color:'#555', fontWeight:600 }}>— {formatZAR(PLAN_PRICES[tier])}/month</span>}
+                        </p>
+                        <p style={{ margin:0, fontSize:13, color:'#888' }}>{PLAN_FEATURES[tier]}</p>
+                      </div>
+                      {isCurrent ? (
+                        <span style={{ fontSize:13, fontWeight:700, color:'#0F6E56' }}>✓ Current plan</span>
+                      ) : isPending ? (
+                        <button onClick={()=>requestPlan(teacher.listing_tier as PlanTier)} disabled={planBusy}
+                          style={{ padding:'8px 16px', borderRadius:6, border:'1.5px solid #c0392b', background:'#fff', color:'#c0392b', cursor:'pointer', fontSize:13, fontWeight:600 }}>
+                          Cancel change
+                        </button>
+                      ) : (
+                        <button onClick={()=>requestPlan(tier)} disabled={planBusy} className="btn-gold" style={{ padding:'8px 18px', fontSize:13 }}>
+                          {PLAN_PRICES[tier] > PLAN_PRICES[teacher.listing_tier as PlanTier] ? 'Upgrade' : 'Switch'} →
+                        </button>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </div>
