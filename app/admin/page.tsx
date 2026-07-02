@@ -157,9 +157,12 @@ export default function AdminPanel() {
   }
 
   async function toggleStatus(t: Teacher) {
-    const newStatus = t.listing_status === 'active' ? 'inactive' : 'active'
-    await supabase.from('teachers').update({ listing_status: newStatus }).eq('id', t.id)
+    const newStatus = t.listing_status === 'active' ? 'suspended' : 'active'
+    const { error } = await supabase.from('teachers').update({ listing_status: newStatus }).eq('id', t.id)
+    if (error) { setActionMsg('⚠️ Could not update status: ' + error.message); setTimeout(() => setActionMsg(''), 4000); return }
+    setActionMsg(newStatus === 'active' ? '✅ Listing activated.' : '⏸️ Listing deactivated.')
     await loadData()
+    setTimeout(() => setActionMsg(''), 3000)
   }
 
   if (loading) return <div style={{ textAlign:'center', padding:80, color:'#0F6E56' }}>Loading admin panel…</div>
