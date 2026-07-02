@@ -1,14 +1,11 @@
 [build]
   command = "npm run build"
-  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
 
+# @netlify/plugin-nextjs handles the publish directory and all routing
+# (SSR, dynamic routes, redirects). Do NOT set `publish` or add a catch-all
+# /* -> /index.html redirect — those break Next.js and cause "Site not found".
 [[plugins]]
   package = "@netlify/plugin-nextjs"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
